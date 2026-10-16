@@ -22,7 +22,7 @@ Test duplikat biasa, dua notifikasi yang dikirim berurutan, tetap hijau. Karena 
 
 ## Menjalankan
 
-Butuh PHP 8.3+ dan Composer.
+Butuh PHP 8.4+ dan Composer.
 
 ```bash
 composer install
