@@ -7,8 +7,13 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Queue\Attributes\Backoff;
+use Illuminate\Queue\Attributes\Tries;
 use Illuminate\Queue\SerializesModels;
 
+// Retried by the queue worker, not by a Midtrans retry.
+#[Tries(5)]
+#[Backoff(60)]
 class VoucherIssued extends Mailable
 {
     use Queueable, SerializesModels;
