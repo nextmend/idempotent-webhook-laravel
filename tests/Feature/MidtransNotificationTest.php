@@ -3,8 +3,12 @@
 namespace Tests\Feature;
 
 use App\Models\Order;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Mail\Events\MessageSending;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Mail;
+use Symfony\Component\Mailer\Exception\TransportException;
 use Tests\TestCase;
 
 class MidtransNotificationTest extends TestCase
@@ -45,6 +49,49 @@ class MidtransNotificationTest extends TestCase
 
         $this->assertSame(1, $this->order->vouchers()->count());
         $this->assertSame(1, $this->emailsSent());
+    }
+
+    public function test_retry_after_a_failed_email_issues_no_second_voucher(): void
+    {
+        // The mail server times out once, so the first attempt fails and Midtrans retries.
+        $failed = false;
+        Event::listen(MessageSending::class, function () use (&$failed) {
+            if (! $failed) {
+                $failed = true;
+                throw new TransportException('Connection to smtp.example.com:587 timed out.');
+            }
+        });
+
+        $this->postJson('/midtrans/notification', $this->notification());
+        $this->postJson('/midtrans/notification', $this->notification())->assertOk();
+
+        $this->assertSame(1, $this->order->vouchers()->count());
+    }
+
+    public function test_duplicate_arriving_mid_processing_issues_no_second_voucher(): void
+    {
+        // The duplicate arrives while the first notification is still sending its email,
+        // one spot inside the window that two parallel requests can hit in production.
+        $duplicateSent = false;
+        Event::listen(MessageSending::class, function () use (&$duplicateSent) {
+            if (! $duplicateSent) {
+                $duplicateSent = true;
+                $this->postJson('/midtrans/notification', $this->notification())->assertOk();
+            }
+        });
+
+        $this->postJson('/midtrans/notification', $this->notification())->assertOk();
+
+        $this->assertSame(1, $this->order->vouchers()->count());
+        $this->assertSame(1, $this->emailsSent());
+    }
+
+    public function test_database_refuses_a_second_voucher_for_one_order(): void
+    {
+        $this->order->vouchers()->create(['code' => 'KODEPERTAMA1']);
+
+        $this->expectException(UniqueConstraintViolationException::class);
+        $this->order->vouchers()->create(['code' => 'KODEKEDUA002']);
     }
 
     /** A notification shaped like Midtrans', signed with the test server key. */
