@@ -1,5 +1,7 @@
 # Idempotent webhook: contoh Laravel
 
+[![tests](https://github.com/nextmend/idempotent-webhook-laravel/actions/workflows/tests.yml/badge.svg)](https://github.com/nextmend/idempotent-webhook-laravel/actions/workflows/tests.yml)
+
 Contoh yang bisa dijalankan untuk artikel [Idempotent webhook: mencegah transaksi ganda](https://nextmend.dev/artikel/idempotent-webhook-mencegah-transaksi-ganda/?utm_source=github&utm_medium=readme&utm_campaign=artikel-idempotent).
 
 Sebuah toko voucher game menerbitkan satu kode voucher untuk setiap order yang dibayar. Midtrans bisa mengirim notifikasi yang sama lebih dari sekali, dan mengirim ulang notifikasi kalau server tidak membalas 2xx (kecuali redirect `301`, `302`, dan `303`). Repo ini mereproduksi dua cara satu pembayaran berubah menjadi dua voucher di Laravel, lalu memperbaikinya:
