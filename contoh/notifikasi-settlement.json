@@ -1,0 +1,15 @@
+{
+    "transaction_time": "2026-10-16 10:21:07",
+    "transaction_status": "settlement",
+    "transaction_id": "7d2e9b14-3c5a-4f8e-a1d6-5e0c8b9f2a73",
+    "status_message": "midtrans payment notification",
+    "status_code": "200",
+    "signature_key": "500732ddf5a802ad48f9d4abe6e74ecf879d2758bf087c59d97815c75ba7b1f3c2f5d6414c9495d6ed94c40e1711e37df6cd4afeb2d88eec868216d6a2eba7f7",
+    "settlement_time": "2026-10-16 10:21:31",
+    "payment_type": "bank_transfer",
+    "order_id": "ORDER-1001",
+    "merchant_id": "G000000000",
+    "gross_amount": "50000.00",
+    "fraud_status": "accept",
+    "currency": "IDR"
+}
